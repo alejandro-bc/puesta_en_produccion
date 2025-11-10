@@ -1,63 +1,67 @@
-# Ejercicio 1
-# Copia y modifica la calculadora (Ejercicio 1 de los tipos de texto) para que admita
-# operaciones con un número variable de operandos (Ej. ADD 2 3 5 8). Añade una operación
-# unaria, como SQRT (raíz cuadrada). Además, utiliza diccionarios para almacenar las
-# operaciones.
-
+#!/usr/bin/env python3
 from math import sqrt
 
 # Diccionario de operaciones
 ops = {
-    'ADD': sum,                     # suma todos los números
-    'MUL': lambda nums: nums[0] if len(nums) == 1 else nums[0] * ops['MUL'](nums[1:]),  # multiplicación
-    'SUB': lambda nums: nums[0] if len(nums) == 1 else nums[0] - sum(nums[1:]),  # resta todo del primero
-    'DIV': lambda nums: nums[0] if len(nums) == 1 else nums[0] / ops['MUL'](nums[1:]),  # divide el primero entre el resto
-    'SQRT': lambda nums: sqrt(nums[0])  # raíz cuadrada (solo primer número)
+    'ADD': lambda nums: sum(nums),
+    'MUL': lambda nums: nums[0] if len(nums) == 1 else nums[0] * ops['MUL'](nums[1:]),
+    'SUB': lambda nums: nums[0] if len(nums) == 1 else nums[0] - sum(nums[1:]),
+    'DIV': lambda nums: nums[0] if len(nums) == 1 else nums[0] / ops['MUL'](nums[1:]),
+    'SQRT': lambda nums: sqrt(nums[0])
 }
 
 ans = 0
 print("Operaciones: ADD, SUB, MUL, DIV, SQRT")
 print("Ejemplos: ADD 2 3 4, MUL 2 3, SQRT 16")
+print("Escribe EXIT para salir")
 
 while True:
-    try:
-        texto = input("> ")
-        if texto.upper() == "EXIT":
-            break
-            
-        # Separar operación y números
-        partes = texto.split()
-        op = partes[0].upper()
-        
-        # Convertir números (usar ANS si aparece)
-        nums = []
-        for n in partes[1:]:
-            if n.upper() == "ANS":
-                nums.append(ans)
-            else:
+    texto = input("> ").strip()
+    if texto.upper() == "EXIT":
+        break
+
+    partes = texto.split()
+    if len(partes) == 0:
+        print("No se ingresó nada")
+        continue
+
+    op = partes[0].upper()
+    if op not in ops:
+        print("Operación no válida")
+        continue
+
+    # Convertir números (usar ANS si aparece)
+    nums = []
+    error_num = False
+    for n in partes[1:]:
+        if n.upper() == "ANS":
+            nums.append(ans)
+        else:
+            # Validar si es número
+            if n.replace('.', '', 1).isdigit() or (n.startswith('-') and n[1:].replace('.', '', 1).isdigit()):
                 nums.append(float(n))
-        
-        # Verificar operación
-        if op not in ops:
-            print("Operación no válida")
+            else:
+                print(f"Operando inválido: {n}")
+                error_num = True
+                break
+    if error_num:
+        continue
+
+    # Validaciones especiales
+    if op == "SQRT":
+        if len(nums) != 1:
+            print("SQRT necesita exactamente un número")
             continue
-            
-        # SQRT necesita exactamente 1 número
-        if op == "SQRT" and len(nums) != 1:
-            print("SQRT necesita solo un número")
+        if nums[0] < 0:
+            print("No se puede calcular la raíz cuadrada de un número negativo")
             continue
-            
-        # Calcular
-        if len(nums) == 0:
-            print("Necesito al menos un número")
-            continue
-            
-        ans = ops[op](nums)
-        print("=", ans)
-        
-    except ValueError:
-        print("Error en los números")
-    except ZeroDivisionError:
+    if op == "DIV" and 0 in nums[1:]:
         print("No puedo dividir por 0")
-    except:
-        print("Error en la operación")
+        continue
+    if len(nums) == 0:
+        print("Necesito al menos un número")
+        continue
+
+    # Calcular resultado
+    ans = ops[op](nums)
+    print("=", ans)

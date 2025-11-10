@@ -12,12 +12,18 @@ else:
         print('Divisa de destino no soportada:', destino)
     else:
         cantidad_text = input('Cantidad a convertir: ').strip()
+        
+        # Verificar si es un número válido
+        es_valida = True
         try:
             cantidad = float(cantidad_text)
-        except Exception:
-            print('Cantidad no válida:', cantidad_text)
-        else:
+        except:
+            es_valida = False
+        
+        if es_valida:
             # Convertimos pasando por USD como referencia
             cantidad_en_usd = cantidad / divisas[origen]
             resultado = cantidad_en_usd * divisas[destino]
             print(f'{cantidad} {origen} = {resultado} {destino}')
+        else:
+            print('Cantidad no válida:', cantidad_text)
