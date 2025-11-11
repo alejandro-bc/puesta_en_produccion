@@ -12,7 +12,7 @@ def validar_dni(dni):
     # Separar números y letra
     numeros = dni[:-1]
     letra = dni[-1]
-    # Comprobar que los números son válidos y la letra es correcta (sin excepciones)
+    # Comprobar que los números son válidos y la letra es correcta
     if not numeros.isdigit():
         return False
 

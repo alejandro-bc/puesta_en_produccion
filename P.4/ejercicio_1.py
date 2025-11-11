@@ -43,22 +43,18 @@ def convertir_cantidad(cantidad, moneda_origen, moneda_destino, tasas):
     if moneda_origen not in tasas or moneda_destino not in tasas:
         return None
     
-    # Convertir a EUR primero (si no es EUR)
-    if moneda_origen != "EUR":
-        cantidad_eur = cantidad / tasas[moneda_origen]
-    else:
-        cantidad_eur = cantidad
-    
-    # Convertir de EUR a la moneda destino
-    if moneda_destino != "EUR":
-        cantidad_final = cantidad_eur * tasas[moneda_destino]
-    else:
-        cantidad_final = cantidad_eur
-    
+    cantidad_eur = cantidad / tasas[moneda_origen] if moneda_origen != "EUR" else cantidad
+    cantidad_final = cantidad_eur * tasas[moneda_destino] if moneda_destino != "EUR" else cantidad_eur
     return cantidad_final
 
+def pedir_float(mensaje):
+    entrada = input(mensaje)
+    if entrada.replace(".", "", 1).isdigit():
+        return float(entrada)
+    else:
+        return None
+
 def main():
-    # Diccionario con los factores de conversión (1 EUR = X unidades de otra moneda)
     tasas_conversion = {
         "EUR": 1.0,
         "USD": 1.18,
@@ -79,7 +75,10 @@ def main():
         opcion = input("\nSeleccione una opción (1-6): ")
         
         if opcion == "1":
-            cantidad = float(input("Introduce la cantidad: "))
+            cantidad = pedir_float("Introduce la cantidad: ")
+            if cantidad is None:
+                print("\nError: Debe ingresar un número válido.")
+                continue
             moneda_origen = input("Introduce la moneda de origen: ").upper()
             moneda_destino = input("Introduce la moneda de destino: ").upper()
             
@@ -91,25 +90,23 @@ def main():
         
         elif opcion == "2":
             moneda = input("Introduce el código de la nueva moneda: ").upper()
-            try:
-                factor = float(input("Introduce el factor de conversión respecto al EUR: "))
-                if agregar_moneda(tasas_conversion, moneda, factor):
-                    print(f"\nMoneda {moneda} agregada exitosamente.")
-                else:
-                    print(f"\nError: La moneda {moneda} ya existe.")
-            except ValueError:
+            factor = pedir_float("Introduce el factor de conversión respecto al EUR: ")
+            if factor is None:
                 print("\nError: El factor debe ser un número válido.")
+            elif agregar_moneda(tasas_conversion, moneda, factor):
+                print(f"\nMoneda {moneda} agregada exitosamente.")
+            else:
+                print(f"\nError: La moneda {moneda} ya existe.")
         
         elif opcion == "3":
             moneda = input("Introduce el código de la moneda a modificar: ").upper()
-            try:
-                nuevo_factor = float(input("Introduce el nuevo factor de conversión: "))
-                if modificar_factor(tasas_conversion, moneda, nuevo_factor):
-                    print(f"\nFactor de conversión de {moneda} modificado exitosamente.")
-                else:
-                    print(f"\nError: La moneda {moneda} no existe.")
-            except ValueError:
+            nuevo_factor = pedir_float("Introduce el nuevo factor de conversión: ")
+            if nuevo_factor is None:
                 print("\nError: El factor debe ser un número válido.")
+            elif modificar_factor(tasas_conversion, moneda, nuevo_factor):
+                print(f"\nFactor de conversión de {moneda} modificado exitosamente.")
+            else:
+                print(f"\nError: La moneda {moneda} no existe.")
         
         elif opcion == "4":
             moneda = input("Introduce el código de la moneda a eliminar: ").upper()
@@ -132,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
