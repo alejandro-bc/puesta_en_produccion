@@ -1,3 +1,21 @@
+"""
+Doctests:
+
+>>> g = Guerrero("Test")
+>>> g.vida
+120
+
+>>> m = Mago("Test")
+>>> m.ataque
+18
+
+>>> a = Asesino("Test")
+>>> a.nivel
+1
+"""
+
+import doctest
+
 class Jugador:
     def __init__(self, nombre, vida, ataque, defensa, velocidad, nivel=1, experiencia=0, tipo="Guerrero"):
         self.nombre = nombre
@@ -35,19 +53,27 @@ class Jugador:
         print("Tus estadísticas han mejorado.")
         self.mostrar_stats()
 
-# Clases derivadas con stats iniciales diferentes
+
+# Clases derivadas con stats iniciales
 class Guerrero(Jugador):
     def __init__(self, nombre):
         super().__init__(nombre, vida=120, ataque=12, defensa=8, velocidad=7, tipo="Guerrero")
+
 
 class Mago(Jugador):
     def __init__(self, nombre):
         super().__init__(nombre, vida=80, ataque=18, defensa=3, velocidad=10, tipo="Mago")
 
+
 class Asesino(Jugador):
     def __init__(self, nombre):
         super().__init__(nombre, vida=90, ataque=14, defensa=4, velocidad=12, tipo="Asesino")
 
+
 class Clerigo(Jugador):
     def __init__(self, nombre):
         super().__init__(nombre, vida=100, ataque=10, defensa=6, velocidad=8, tipo="Clérigo")
+
+
+if __name__ == "__main__":
+    doctest.testmod(verbose=True)
